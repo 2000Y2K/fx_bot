@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 
 // ─── CONFIG ────────────────────────────────────────────────────────────────
-const API = (window.__API_BASE__ || "http://localhost:8000").replace(/\/$/, "");
+const API = (import.meta.env.VITE_API_BASE_URL || window.__API_BASE__ || "http://localhost:8000").replace(/\/$/, "");
 
 const STATUS_COLORS = {
   pending:     { bg: "bg-zinc-700",       text: "text-zinc-300",    dot: "bg-zinc-400",    label: "PENDIENTE" },
