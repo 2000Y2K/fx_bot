@@ -34,18 +34,25 @@ _PATTERNS: list[tuple[str, list[str]]] = [
         r"\bestado\s+d(el?|e\s+la)\s+archivo\b",
         r"\barchivo\s+\w+",
         r"\bqui[eé]n\s+trabaja\b",
+        r"\b\w[\w\-]*\.\w{2,5}\b",  # nombre.ext directamente
     ]),
     ("marcar_en_curso", [
         r"\b(empec[eé]|arranco|comienzo|voy\s+a\s+empezar|estoy\s+trabajando)\b.*\b(\d+)\b",
         r"\b(\d+)\b.*\b(en\s+curso|empec[eé]|arranco)\b",
+        r"\b(empec[eé]|arranco|comienzo|voy\s+a\s+empezar|estoy\s+trabajando)\b.*\b\w[\w\-]*\.\w{2,5}\b",
+        r"\b\w[\w\-]*\.\w{2,5}\b.*\b(en\s+curso|empec[eé]|arranco)\b",
     ]),
     ("marcar_listo", [
         r"\b(termin[eé]|listo|entregu[eé]|ya\s+est[aá]|hecho)\b.*\b(\d+)\b",
         r"\b(\d+)\b.*\b(termin[eé]|listo|entregu[eé])\b",
+        r"\b(termin[eé]|entregu[eé]|ya\s+est[aá]|hecho)\b.*\b\w[\w\-]*\.\w{2,5}\b",
+        r"\b\w[\w\-]*\.\w{2,5}\b.*\b(termin[eé]|listo|entregu[eé])\b",
     ]),
     ("marcar_bloqueado", [
         r"\b(bloqueado|bloqueo|problema|no\s+puedo\s+avanzar|estoy\s+trabado)\b.*\b(\d+)\b",
         r"\b(\d+)\b.*\b(bloqueado|problema|trabado)\b",
+        r"\b(bloqueado|bloqueo|problema|no\s+puedo\s+avanzar|estoy\s+trabado)\b.*\b\w[\w\-]*\.\w{2,5}\b",
+        r"\b\w[\w\-]*\.\w{2,5}\b.*\b(bloqueado|problema|trabado)\b",
     ]),
 ]
 
@@ -56,8 +63,17 @@ def _extract_id(text: str) -> Optional[int]:
     return int(match.group(1)) if match else None
 
 
+def _extract_filename(text: str) -> str | None:
+    """Try to extract a nombre.ext pattern from text."""
+    match = re.search(r"\b(\w[\w\-]*\.\w{2,5})\b", text, re.IGNORECASE)
+    return match.group(1) if match else None
+
+
 def _extract_query(text: str) -> str:
     """Extract a file/asset search query by stripping common noise words."""
+    filename = _extract_filename(text)
+    if filename:
+        return filename
     noise = r"\b(qui[eé]n|tiene|est[aá]|en|el|la|archivo|del|de|trabaja|trabajando)\b"
     cleaned = re.sub(noise, " ", text, flags=re.IGNORECASE)
     return re.sub(r"\s+", " ", cleaned).strip()
@@ -86,5 +102,8 @@ def _build_params(intent: str, text: str) -> dict:
         return {"query": _extract_query(text)}
     if intent in ("marcar_en_curso", "marcar_listo", "marcar_bloqueado"):
         aid = _extract_id(text)
-        return {"assignment_id": aid} if aid else {}
+        if aid:
+            return {"assignment_id": aid}
+        filename = _extract_filename(text)
+        return {"query": filename} if filename else {}
     return {}

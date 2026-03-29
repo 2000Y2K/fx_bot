@@ -33,11 +33,12 @@ INTENTS = {
     },
     "buscar_archivo": {
         "description": "El usuario quiere saber quién está trabajando en un archivo específico o buscar un asset por nombre.",
-        "examples": ["quién tiene la escena 4", "cómo está el comp final", "busco el archivo de audio"],
+        "examples": ["quién tiene la escena 4", "cómo está el comp final", "busco el archivo de audio", "cómo está render.mp4"],
         "keywords": [r"\bqui[eé]n\s+(tiene|trabaja|est[aá])\b",
                      r"\bc[oó]mo\s+est[aá]\b.*\barchivo\b",
                      r"\bbusco?\b",
-                     r"\bestado\s+de[l]?\b"],
+                     r"\bestado\s+de[l]?\b",
+                     r"\b\w[\w\-]*\.\w{2,5}\b"],  # nombre.ext directamente
         "requires_arg": True,
     },
     "marcar_en_curso": {
@@ -110,7 +111,13 @@ def extract_search_term(text: str) -> str:
     """
     Strip intent verbs, bot mention, stopwords and return the remaining
     token(s) — which should be the asset name the user referred to.
+    Prioritizes nombre.ext patterns since assets always use that format.
     """
+    # Primero intentar extraer un nombre.ext directamente
+    filename_match = re.search(r"\b(\w[\w\-]*\.\w{2,5})\b", text, re.IGNORECASE)
+    if filename_match:
+        return filename_match.group(1).lower()
+
     clean = text.lower()
     clean = re.sub(_MENTION, "", clean)
     for verb_pat in _INTENT_VERBS:
@@ -133,10 +140,13 @@ Tu única tarea es clasificar el mensaje del usuario en UNA de estas intenciones
 
 {INTENTS_CONTEXT}
 
+IMPORTANTE: Los assets siempre tienen el formato nombre.extensión (ej: render.mp4, audio.wav, escena4.blend, comp_final.aep).
+Si el usuario menciona una palabra con ese formato, es casi seguro que se refiere a un asset.
+
 Respondé ÚNICAMENTE con un JSON con este formato exacto, sin texto adicional:
 {{
   "intent": "nombre_de_la_intencion",
-  "search_term": "término de búsqueda si aplica, o null",
+  "search_term": "el nombre del asset con su extensión si aplica (ej: render.mp4), o null",
   "assignment_id": número si el usuario menciona un ID, o null,
   "confidence": "high" | "medium" | "low"
 }}
