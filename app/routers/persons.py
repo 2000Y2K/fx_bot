@@ -7,7 +7,7 @@ from app.schemas.schemas import PersonCreate, PersonUpdate, PersonOut, PersonWit
 router = APIRouter()
 
 
-@router.post("/", response_model=PersonOut, status_code=201)
+@router.post("", response_model=PersonOut, status_code=201)
 def create_person(data: PersonCreate, db: Session = Depends(get_db)):
     person = Person(**data.model_dump())
     db.add(person)
@@ -16,7 +16,7 @@ def create_person(data: PersonCreate, db: Session = Depends(get_db)):
     return person
 
 
-@router.get("/", response_model=list[PersonOut])
+@router.get("", response_model=list[PersonOut])
 def list_persons(team_id: int | None = None, db: Session = Depends(get_db)):
     q = db.query(Person)
     if team_id:

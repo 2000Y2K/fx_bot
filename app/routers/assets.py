@@ -7,7 +7,7 @@ from app.schemas.schemas import AssetCreate, AssetUpdate, AssetOut, AssignmentOu
 router = APIRouter()
 
 
-@router.post("/", response_model=AssetOut, status_code=201)
+@router.post("", response_model=AssetOut, status_code=201)
 def create_asset(data: AssetCreate, db: Session = Depends(get_db)):
     asset = Asset(**data.model_dump())
     db.add(asset)
@@ -16,7 +16,7 @@ def create_asset(data: AssetCreate, db: Session = Depends(get_db)):
     return asset
 
 
-@router.get("/", response_model=list[AssetOut])
+@router.get("", response_model=list[AssetOut])
 def list_assets(project_id: int | None = None, db: Session = Depends(get_db)):
     q = db.query(Asset)
     if project_id:

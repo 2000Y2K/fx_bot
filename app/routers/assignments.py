@@ -7,7 +7,7 @@ from app.schemas.schemas import AssignmentCreate, AssignmentOut, AssignmentStatu
 router = APIRouter()
 
 
-@router.post("/", response_model=AssignmentOut, status_code=201)
+@router.post("", response_model=AssignmentOut, status_code=201)
 def create_assignment(data: AssignmentCreate, db: Session = Depends(get_db)):
     """Admins create assignments."""
     assignment = Assignment(

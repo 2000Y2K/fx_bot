@@ -7,7 +7,7 @@ from app.schemas.schemas import TeamCreate, TeamOut
 router = APIRouter()
 
 
-@router.post("/", response_model=TeamOut, status_code=201)
+@router.post("", response_model=TeamOut, status_code=201)
 def create_team(data: TeamCreate, db: Session = Depends(get_db)):
     team = Team(**data.model_dump())
     db.add(team)
@@ -16,7 +16,7 @@ def create_team(data: TeamCreate, db: Session = Depends(get_db)):
     return team
 
 
-@router.get("/", response_model=list[TeamOut])
+@router.get("", response_model=list[TeamOut])
 def list_teams(project_id: int | None = None, db: Session = Depends(get_db)):
     q = db.query(Team)
     if project_id:

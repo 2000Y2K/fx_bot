@@ -7,7 +7,7 @@ from app.schemas.schemas import ProjectCreate, ProjectOut
 router = APIRouter()
 
 
-@router.post("/", response_model=ProjectOut, status_code=201)
+@router.post("", response_model=ProjectOut, status_code=201)
 def create_project(data: ProjectCreate, db: Session = Depends(get_db)):
     project = Project(**data.model_dump())
     db.add(project)
@@ -16,7 +16,7 @@ def create_project(data: ProjectCreate, db: Session = Depends(get_db)):
     return project
 
 
-@router.get("/", response_model=list[ProjectOut])
+@router.get("", response_model=list[ProjectOut])
 def list_projects(db: Session = Depends(get_db)):
     return db.query(Project).all()
 

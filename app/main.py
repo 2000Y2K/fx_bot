@@ -6,7 +6,7 @@ from app.db.database import engine, Base
 
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="Audiovisual Asset Manager API", version="0.1.0")
+app = FastAPI(title="Audiovisual Asset Manager API", version="0.1.0", redirect_slashes=False)
 
 _origins_env = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173")
 origins = [o.strip() for o in _origins_env.split(",")]
