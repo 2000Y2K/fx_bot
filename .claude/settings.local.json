@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(wc:*)",
+      "Bash(find /c/fx_bot -type d -not -path */node_modules/* -not -path */.git/* -not -path */__pycache__/*)",
+      "Bash(find /c/fx_bot -not -path */node_modules/* -not -path */__pycache__/* -not -path */.git/* -not -path */.history/* -type d)"
+    ]
+  }
+}
