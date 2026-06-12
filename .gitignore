@@ -1,5 +1,4 @@
 # env files
-bot_wa/.env
 .env
 
 # venvs
@@ -11,3 +10,8 @@ env/
 # python cache
 __pycache__/
 *.pyc
+
+# local dev DB
+dev.db
+*.sqlite
+*.sqlite3
