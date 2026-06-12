@@ -40,8 +40,7 @@ class Person(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(200), nullable=False)
-    whatsapp_number = Column(String(30), unique=True, nullable=True)   
-    telegram_id = Column(String(30), unique=True, nullable=True) 
+    whatsapp_number = Column(String(30), unique=True, nullable=False)
     team_id = Column(Integer, ForeignKey("teams.id"), nullable=False)
 
     team = relationship("Team", back_populates="persons")

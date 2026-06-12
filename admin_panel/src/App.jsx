@@ -205,12 +205,12 @@ function PersonsSection() {
   const { data: projects }                 = useData("/projects");
   const [modal, setModal]         = useState(false);
   const [editModal, setEditModal] = useState(null);
-  const [form, setForm]     = useState({ name: "", whatsapp_number: "", telegram_id: "", team_id: "" });
-  const [editForm, setEditForm] = useState({ name: "", whatsapp_number: "", telegram_id: "", team_id: "" });
+  const [form, setForm]     = useState({ name: "", whatsapp_number: "", team_id: "" });
+  const [editForm, setEditForm] = useState({ name: "", whatsapp_number: "", team_id: "" });
 
   async function handleCreate() {
     await api.post("/persons", { ...form, team_id: parseInt(form.team_id) });
-    setModal(false); setForm({ name: "", whatsapp_number: "", telegram_id: "", team_id: "" }); reload();
+    setModal(false); setForm({ name: "", whatsapp_number: "", team_id: "" }); reload();
   }
 
   function openEdit(p) {
@@ -218,7 +218,6 @@ function PersonsSection() {
     setEditForm({
       name: p.name,
       whatsapp_number: p.whatsapp_number || "",
-      telegram_id: p.telegram_id || "",
       team_id: String(p.team_id),
     });
   }
@@ -247,12 +246,8 @@ function PersonsSection() {
                   <div>
                     <div className="text-sm font-semibold text-white">{p.name}</div>
                     <div className="text-xs text-zinc-500 flex items-center gap-2 flex-wrap">
-                      {p.whatsapp_number && <span>{p.whatsapp_number}</span>}
+                      {p.whatsapp_number && <span className="font-mono">{p.whatsapp_number}</span>}
                       {team && <span>· {teamLabel(team, projects)}</span>}
-                      {p.telegram_id
-                        ? <span className="text-emerald-500 font-mono">✓ TG:{p.telegram_id}</span>
-                        : <span className="text-red-500/70">✗ sin Telegram</span>
-                      }
                     </div>
                   </div>
                 </div>
@@ -275,10 +270,7 @@ function PersonsSection() {
             <input className={inputClass} value={editForm.name} onChange={e => setEditForm({...editForm, name: e.target.value})} />
           </Field>
           <Field label="WhatsApp">
-            <input className={inputClass} value={editForm.whatsapp_number} onChange={e => setEditForm({...editForm, whatsapp_number: e.target.value})} placeholder="+5491155555555" />
-          </Field>
-          <Field label="Telegram ID">
-            <input className={inputClass} value={editForm.telegram_id} onChange={e => setEditForm({...editForm, telegram_id: e.target.value})} placeholder="El usuario lo ve con /start" />
+            <input className={inputClass} value={editForm.whatsapp_number} onChange={e => setEditForm({...editForm, whatsapp_number: e.target.value})} placeholder="5491155555555 (solo dígitos)" />
           </Field>
           <Field label="Equipo">
             <select className={inputClass} value={editForm.team_id} onChange={e => setEditForm({...editForm, team_id: e.target.value})}>
@@ -299,8 +291,7 @@ function PersonsSection() {
       {modal && (
         <Modal title="Nueva Persona" onClose={() => setModal(false)}>
           <Field label="Nombre"><input className={inputClass} value={form.name} onChange={e => setForm({...form, name: e.target.value})} placeholder="Ana García" /></Field>
-          <Field label="WhatsApp (con código de país)"><input className={inputClass} value={form.whatsapp_number} onChange={e => setForm({...form, whatsapp_number: e.target.value})} placeholder="+5491155555555" /></Field>
-          <Field label="Telegram ID"><input className={inputClass} value={form.telegram_id} onChange={e => setForm({...form, telegram_id: e.target.value})} placeholder="Opcional — el usuario lo ve con /start" /></Field>
+          <Field label="WhatsApp"><input className={inputClass} value={form.whatsapp_number} onChange={e => setForm({...form, whatsapp_number: e.target.value})} placeholder="5491155555555 (solo dígitos)" /></Field>
           <Field label="Equipo">
             <select className={inputClass} value={form.team_id} onChange={e => setForm({...form, team_id: e.target.value})}>
               <option value="">— Seleccionar —</option>
@@ -312,7 +303,7 @@ function PersonsSection() {
           </Field>
           <div className="flex gap-2 justify-end mt-2">
             <button className={btnGhost} onClick={() => setModal(false)}>Cancelar</button>
-            <button className={btnPrimary} onClick={handleCreate} disabled={!form.name || !form.team_id}>Crear</button>
+            <button className={btnPrimary} onClick={handleCreate} disabled={!form.name || !form.whatsapp_number || !form.team_id}>Crear</button>
           </div>
         </Modal>
       )}
@@ -624,9 +615,9 @@ function HelpSection() {
           <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-5">
             <h3 className="text-xs font-bold tracking-widest text-amber-400 uppercase mb-3">Primeros pasos</h3>
             <ol className="space-y-2 text-zinc-300 list-decimal list-inside">
-              <li>Buscá el bot en Telegram por su nombre.</li>
-              <li>Mandále <code className="bg-zinc-800 px-1.5 py-0.5 rounded text-amber-300">/start</code> — te va a mostrar tu <b>Telegram ID</b>.</li>
-              <li>Pasale ese número a tu admin para que te registre en el sistema.</li>
+              <li>Guardá el número del bot en la agenda de tu celular como contacto.</li>
+              <li>Abrí un chat con el bot por WhatsApp y mandale cualquier mensaje (ej: <code className="bg-zinc-800 px-1.5 py-0.5 rounded text-amber-300">hola</code>).</li>
+              <li>Si no estás registrado, el bot te responde con tu <b>número de identificación</b>. Pasáselo a tu admin.</li>
               <li>Una vez registrado, podés escribirle al bot en lenguaje natural.</li>
             </ol>
           </div>
@@ -657,9 +648,9 @@ function HelpSection() {
           <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-5">
             <h3 className="text-xs font-bold tracking-widest text-amber-400 uppercase mb-3">En grupos</h3>
             <p className="text-zinc-400 text-xs leading-relaxed">
-              Si el bot está en un grupo de Telegram, tenés que etiquetarlo para que responda:<br/>
-              <code className="bg-zinc-800 px-1.5 py-0.5 rounded text-amber-300 mt-1 inline-block">@nombre_del_bot qué tengo asignado?</code><br/><br/>
-              También podés responder un mensaje del bot directamente y te va a escuchar sin necesidad de etiquetarlo.
+              Si el bot está en un grupo de WhatsApp, tenés que incluir la palabra <code className="bg-zinc-800 px-1.5 py-0.5 rounded text-amber-300">bot</code> en tu mensaje para que responda:<br/>
+              <code className="bg-zinc-800 px-1.5 py-0.5 rounded text-amber-300 mt-1 inline-block">bot qué tengo asignado?</code><br/><br/>
+              En chat privado con el bot no hace falta — responde a todo.
             </p>
           </div>
         </div>
@@ -672,7 +663,7 @@ function HelpSection() {
             <ol className="space-y-2 text-zinc-300 list-decimal list-inside">
               <li>Creá un <b>Proyecto</b> en la pestaña Proyectos.</li>
               <li>Creá los <b>Equipos</b> que participan (Edición, Sonido, FX, etc.).</li>
-              <li>Registrá a cada <b>Persona</b> con su nombre y equipo. El Telegram ID lo obtienen ellos con <code className="bg-zinc-800 px-1 rounded text-amber-300">/start</code>.</li>
+              <li>Registrá a cada <b>Persona</b> con su nombre, equipo y número de identificación de WhatsApp (mirá la sección "Registrar un trabajador" más abajo).</li>
               <li>Cargá los <b>Assets</b> con su link de Drive y versión actual.</li>
               <li>Creá <b>Asignaciones</b> para indicar quién trabaja qué.</li>
             </ol>
@@ -699,9 +690,9 @@ function HelpSection() {
           <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-5">
             <h3 className="text-xs font-bold tracking-widest text-amber-400 uppercase mb-3">Registrar un trabajador</h3>
             <ol className="space-y-1 text-xs text-zinc-400 list-decimal list-inside">
-              <li>El trabajador manda <code className="bg-zinc-800 px-1 rounded text-amber-300">/start</code> al bot y copia su Telegram ID.</li>
-              <li>En la pestaña <b>Personas</b>, creá su perfil o editá uno existente.</li>
-              <li>Pegá el Telegram ID en el campo correspondiente.</li>
+              <li>El trabajador guarda el número del bot en su agenda y le manda un mensaje cualquiera.</li>
+              <li>El bot le responde con su <b>número de identificación</b> (solo dígitos, sin <code className="bg-zinc-800 px-1 rounded text-amber-300">+</code>).</li>
+              <li>En la pestaña <b>Personas</b>, creá su perfil con ese número en el campo <b>WhatsApp</b>.</li>
               <li>Ya puede usar el bot.</li>
             </ol>
           </div>

@@ -49,19 +49,6 @@ def get_by_whatsapp(number: str, db: Session = Depends(get_db)):
     return person
 
 
-@router.get("/by-telegram/{telegram_id}", response_model=PersonWithTeam)
-def get_by_telegram(telegram_id: str, db: Session = Depends(get_db)):
-    person = (
-        db.query(Person)
-        .options(joinedload(Person.team))
-        .filter(Person.telegram_id == telegram_id)
-        .first()
-    )
-    if not person:
-        raise HTTPException(status_code=404, detail="Person not found")
-    return person
-
-
 @router.get("/{person_id}/assignments", response_model=PersonAssignments)
 def get_person_assignments(
     person_id: int,

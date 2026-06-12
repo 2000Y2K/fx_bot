@@ -1,1 +1,13 @@
-bot/.env
+# env files
+bot_wa/.env
+.env
+
+# venvs
+venv/
+venv_*/
+.venv/
+env/
+
+# python cache
+__pycache__/
+*.pyc

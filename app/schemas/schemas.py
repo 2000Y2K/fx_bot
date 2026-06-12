@@ -28,29 +28,25 @@ class TeamOut(TeamCreate):
 # --- Person ---
 class PersonCreate(BaseModel):
     name: str
-    whatsapp_number: Optional[str] = None
-    telegram_id: Optional[str] = None
+    whatsapp_number: str
     team_id: int
 
 class PersonUpdate(BaseModel):
     name: Optional[str] = None
     whatsapp_number: Optional[str] = None
-    telegram_id: Optional[str] = None
     team_id: Optional[int] = None
 
 class PersonOut(BaseModel):
     id: int
     name: str
-    whatsapp_number: Optional[str] = None
-    telegram_id: Optional[str] = None
+    whatsapp_number: str
     team_id: int
     class Config: from_attributes = True
 
 class PersonWithTeam(BaseModel):
     id: int
     name: str
-    whatsapp_number: Optional[str] = None
-    telegram_id: Optional[str] = None
+    whatsapp_number: str
     team: TeamOut
     class Config: from_attributes = True
 

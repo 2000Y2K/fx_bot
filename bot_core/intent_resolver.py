@@ -18,34 +18,31 @@ INTENTS = {
     "mis_asignaciones": {
         "description": "El usuario quiere saber qué archivos o tareas tiene asignados.",
         "examples": ["qué tengo", "mis archivos", "qué me toca", "tengo algo asignado", "mis tareas", "qué debo hacer"],
-        "keywords": [r"\bmi[os]?\b.*\b(asignaci[oó]n|archivo|tarea|trabajo)\b",
+        "keywords": [r"\bmi[os]?\b.*\b(asignaci[oó]n(es)?|archivos?|tareas?|trabajos?)\b",
                      r"\bqu[eé]\s+(tengo|me\s+toca|debo)\b",
                      r"\btengo\s+algo\b",
-                     r"\bmi[os]?\s+(archivos?|tareas?)\b"],
+                     r"\bmi[os]?\s+(archivos?|tareas?|asignaci[oó]n(es)?)\b"],
     },
     "asignaciones_equipo": {
         "description": "El usuario quiere ver las asignaciones de su equipo.",
-        "examples": ["qué tiene el equipo", "cómo está el equipo", "asignaciones del equipo", "qué están haciendo"],
+        "examples": ["qué tiene el equipo", "cómo está el equipo", "asignaciones del equipo", "qué están haciendo todos"],
         "keywords": [r"\bequipo\b",
                      r"\bqu[eé]\s+tiene[n]?\b",
+                     r"\bqu[eé]\s+est[aá]n\s+haciendo\b",        # "qué están haciendo"
                      r"\bcompa[sñ]\b",
-                     r"\btodos\b.*\b(hacen|trabajan|tienen)\b"],
+                     r"\btodos\b.*\b(hacen|haciendo|trabajan|tienen)\b",
+                     r"\b(hacen|haciendo|trabajan|tienen)\b.*\btodos\b"],
     },
-    "buscar_archivo": {
-        "description": "El usuario quiere saber quién está trabajando en un archivo específico o buscar un asset por nombre.",
-        "examples": ["quién tiene la escena 4", "cómo está el comp final", "busco el archivo de audio", "cómo está render.mp4"],
-        "keywords": [r"\bqui[eé]n\s+(tiene|trabaja|est[aá])\b",
-                     r"\bc[oó]mo\s+est[aá]\b.*\barchivo\b",
-                     r"\bbusco?\b",
-                     r"\bestado\s+de[l]?\b",
-                     r"\b\w[\w\-]*\.\w{2,5}\b"],  # nombre.ext directamente
-        "requires_arg": True,
-    },
+    # ── intents de acción primero: los verbos (empecé/terminé/bloqueado) son
+    # señal más fuerte que la sola presencia de un filename ──
     "marcar_en_curso": {
         "description": "El usuario avisa que empezó a trabajar en algo.",
-        "examples": ["empecé con la escena 4", "arranqué el comp", "estoy trabajando en el modelo"],
-        "keywords": [r"\bempec[eé]\b",
-                     r"\barranqu[eé]\b",
+        "examples": ["empecé con la escena 4", "arranqué el comp", "arranco con el modelo", "estoy trabajando en el modelo"],
+        "keywords": [r"\bempec[eé]\b",                            # empecé, empece
+                     r"\barranqu[eé]\b",                          # arranqué, arranque
+                     r"\barranc(o|ar|amos|aste|aron|ando)\b",     # arranco, arrancar, arrancando, etc.
+                     r"\bcomenc[eé]\b",                           # comencé, comence
+                     r"\binici[eé]\b",                            # inicié, inicie
                      r"\bestoy\s+trabajando\b",
                      r"\bme\s+puse\b",
                      r"\btomé?\b.*\barchivo\b"],
@@ -69,6 +66,18 @@ INTENTS = {
                      r"\btengo\s+un\s+problema\b",
                      r"\bstuck\b",
                      r"\btraba[dr]\b"],
+        "requires_arg": True,
+    },
+    "buscar_archivo": {
+        "description": "El usuario quiere saber quién está trabajando en un archivo específico o buscar un asset por nombre.",
+        "examples": ["quién tiene la escena 4", "cómo está el comp final", "busco el archivo de audio", "cómo está render.mp4"],
+        "keywords": [r"\bqui[eé]n\s+(tiene|trabaja|est[aá])\b",
+                     r"\bc[oó]mo\s+est[aá]\b",                    # "cómo está la escena 4"
+                     r"\bc[oó]mo\s+va\b",                         # "cómo va el comp"
+                     r"\bqu[eé]\s+pasa\s+con\b",                  # "qué pasa con el modelo"
+                     r"\bbusco?\b",
+                     r"\bestado\s+de[l]?\b",
+                     r"\b\w[\w\-]*\.\w{2,5}\b"],                  # nombre.ext directamente
         "requires_arg": True,
     },
     "ayuda": {
